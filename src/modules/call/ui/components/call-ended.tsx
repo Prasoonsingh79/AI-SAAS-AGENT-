@@ -1,17 +1,10 @@
 import Link from "next/link";
-import {
-  useCallStateHooks,
-} from "@stream-io/video-react-sdk";
-
 import { Button } from "@/components/ui/button";
 import "@stream-io/video-react-sdk/dist/css/styles.css";
 
 
 export const CallEnded = () => {
-  const { useCameraState, useMicrophoneState } = useCallStateHooks();
 
-  const { hasBrowserPermission: hasMicPermission } = useMicrophoneState();
-  const { hasBrowserPermission: hasCameraPermission } = useCameraState();
 
 
 
