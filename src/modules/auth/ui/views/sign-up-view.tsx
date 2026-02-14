@@ -90,28 +90,7 @@ export const SignUpView = () => {
     }
   };
 
-  const handleSocialLogin = async (provider: "google" | "github") => {
-    setIsLoading(true);
-    setError(null);
 
-    try {
-      if (provider === "google") {
-        await authClient.signIn.social({
-          provider: "google",
-          callbackURL: "/",
-        });
-      } else if (provider === "github") {
-        await authClient.signIn.social({
-          provider: "github",
-          callbackURL: "/",
-        });
-      }
-    } catch (err) {
-      setError(`Failed to sign in with ${provider}. Please try again.`);
-      setIsLoading(false);
-      console.log(err);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">

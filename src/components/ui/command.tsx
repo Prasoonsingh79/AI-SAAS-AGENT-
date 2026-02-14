@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { boolean } from "better-auth"
+
 
 function Command({
   className,
@@ -34,7 +34,7 @@ function CommandDialog({
   title = "Command Palette",
   description = "Search for a command to run...",
   children,
-  shouldFilter=true,
+  shouldFilter = true,
   className,
   showCloseButton = true,
   ...props
@@ -42,7 +42,7 @@ function CommandDialog({
   title?: string
   description?: string
   className?: string
-  shouldFilter?:boolean
+  shouldFilter?: boolean
 
   showCloseButton?: boolean
 }) {

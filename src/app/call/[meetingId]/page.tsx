@@ -1,4 +1,4 @@
-import { session } from "@/db/schema";
+
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
@@ -13,29 +13,29 @@ interface Props {
     }>;
 };
 
- const Page = async({params}:Props)=>{
-    const {meetingId}=await params; 
+const Page = async ({ params }: Props) => {
+    const { meetingId } = await params;
     const session = await auth.api.getSession({
-        headers:await headers(),
+        headers: await headers(),
     });
 
 
-if (!session){
-      redirect("/sign-in");
-}
+    if (!session) {
+        redirect("/sign-in");
+    }
 
 
 
-const queryClient = getQueryClient();
-void queryClient.prefetchQuery(
-    trpc.meetings.getOne.queryOptions({id:meetingId})
-);
+    const queryClient = getQueryClient();
+    void queryClient.prefetchQuery(
+        trpc.meetings.getOne.queryOptions({ id: meetingId })
+    );
 
-return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-     <CallView meetingId={meetingId}/>
-    </HydrationBoundary>
-)
+    return (
+        <HydrationBoundary state={dehydrate(queryClient)}>
+            <CallView meetingId={meetingId} />
+        </HydrationBoundary>
+    )
 
 };
 export default Page;

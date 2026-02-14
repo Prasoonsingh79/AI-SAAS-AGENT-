@@ -4,19 +4,18 @@ import { useTRPC } from "@/trpc/client";
 import { CommandSelect } from "@/components/command-select";
 import { GeneratedAvatar } from "@/components/generated-avatar";
 import { useMeetingsFilter } from "../../hooks/use-meetings-filter";
-import { id } from "date-fns/locale";
-import { Value } from "@radix-ui/react-select";
+
 
 export const AgentIdFilter = () => {
     const [agentSearch, setAgentSearch] = useState("");
     const [filters, setFilters] = useMeetingsFilter();
     const trpc = useTRPC();
-  
+
     // Fetch agents with search functionality
-    const { data}=useQuery(
+    const { data } = useQuery(
         trpc.agents.getMany.queryOptions({
-           pageSize:100,
-           search: agentSearch,
+            pageSize: 100,
+            search: agentSearch,
         }),
     );
 
@@ -31,7 +30,7 @@ export const AgentIdFilter = () => {
                 value: agent.id,
                 label: agent.name,
                 logo: (
-                    <GeneratedAvatar 
+                    <GeneratedAvatar
                         seed={agent.name}
                         variant="botttsNeutral"
                         className="size-4"

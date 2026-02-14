@@ -202,7 +202,7 @@ const TranscriptView = ({ url, agentId, agentName }: TranscriptViewProps) => {
                         setTranscript(data);
                         return;
                     }
-                } catch (e) {
+                } catch {
                     // If regular JSON parse fails, try JSONL (newline delimited)
                 }
 

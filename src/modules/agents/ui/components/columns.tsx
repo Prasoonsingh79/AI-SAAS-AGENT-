@@ -1,13 +1,11 @@
-"use client"
-import {format} from "date-fns";
-import humanizeDuration from "humanize-duration";
+import { format } from "date-fns";
 import { ColumnDef } from "@tanstack/react-table"
-import { AgentGetOne } from "../../types"
 import { GeneratedAvatar } from "@/components/generated-avatar"
-import { 
-  CircleCheckIcon,CircleXIcon,CircleArrowUpIcon,ClockFadingIcon,CornerDownRightIcon,LoaderIcon,CornerDownRight, VideoIcon } from "lucide-react"
+import {
+  CircleCheckIcon, CircleXIcon, CircleArrowUpIcon, ClockFadingIcon, LoaderIcon, CornerDownRight
+} from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import{cn} from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { MeetingGetMany } from "@/modules/meetings/types"
 
 /**
@@ -17,20 +15,7 @@ import { MeetingGetMany } from "@/modules/meetings/types"
  * formatDuration(3600) // "1h"
  * formatDuration(3665) // "1h 1m 5s"
  */
-function formatDuration(seconds: number): string {
-  if (isNaN(seconds) || seconds < 0) return '0s';
-  
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const remainingSeconds = Math.floor(seconds % 60);
-  
-  const parts = [];
-  if (hours > 0) parts.push(`${hours}h`);
-  if (minutes > 0) parts.push(`${minutes}m`);
-  if (remainingSeconds > 0 || parts.length === 0) parts.push(`${remainingSeconds}s`);
-  
-  return parts.join(' ');
-}
+
 
 
 const statusIconMap = {
@@ -81,30 +66,30 @@ const statusColorMap = {
   default: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300"
 } as const;
 
-type MeetingStatus = keyof typeof statusIconMap;
+
 export const columns: ColumnDef<MeetingGetMany[number]>[] = [
   {
     accessorKey: "name",
     header: "Meeting Name",
-    cell:({row})=>(
-        <div className="flex flex-col gap-y-1">
-            <div className="flex items-center gap-x-2">
-                <span className="font-semibold capitalize">{row.original.name}</span>
-            </div>
-         
-                <div className="flex gap-x-1">
-                 <CornerDownRight className="size-3 text-muted-foreground"/>
-                 <span className="text-sm max-w-[200px] truncate capitalize">{row.original.agent?.name || 'Agent'}</span>
-                </div>
-                <GeneratedAvatar
-                  variant="botttsNeutral"
-                  seed={row.original.agent?.name || row.original.name || 'Agent'}
-                  className="size-5"
-                />
-                <span className="text-sm text-muted-foreground">
-                  {row.original.startedAt ? format(row.original.startedAt, "MMM d"): ""}
-                </span>
+    cell: ({ row }) => (
+      <div className="flex flex-col gap-y-1">
+        <div className="flex items-center gap-x-2">
+          <span className="font-semibold capitalize">{row.original.name}</span>
         </div>
+
+        <div className="flex gap-x-1">
+          <CornerDownRight className="size-3 text-muted-foreground" />
+          <span className="text-sm max-w-[200px] truncate capitalize">{row.original.agent?.name || 'Agent'}</span>
+        </div>
+        <GeneratedAvatar
+          variant="botttsNeutral"
+          seed={row.original.agent?.name || row.original.name || 'Agent'}
+          className="size-5"
+        />
+        <span className="text-sm text-muted-foreground">
+          {row.original.startedAt ? format(row.original.startedAt, "MMM d") : ""}
+        </span>
+      </div>
     )
   },
 
@@ -113,11 +98,11 @@ export const columns: ColumnDef<MeetingGetMany[number]>[] = [
     header: "Status",
     cell: ({ row }) => {
       const status = row.original.status || 'default';
-      const { icon: StatusIcon, color, label } = statusIconMap[status as keyof typeof statusIconMap] || statusIconMap.default;
-      
+      const { icon: StatusIcon } = statusIconMap[status as keyof typeof statusIconMap] || statusIconMap.default;
+
       return (
-        <Badge 
-          variant="outline" 
+        <Badge
+          variant="outline"
           className={cn(
             "captialize [&>svg]:size-4 text-muted-foreground",
             statusColorMap[row.original.status as keyof typeof statusColorMap]
@@ -125,10 +110,10 @@ export const columns: ColumnDef<MeetingGetMany[number]>[] = [
         >
           <StatusIcon className={cn(
 
-            row.original.status== "processing" && "animate-spin"
+            row.original.status == "processing" && "animate-spin"
           )}
-         />
-         {row.original.status}
+          />
+          {row.original.status}
         </Badge>
       );
     }

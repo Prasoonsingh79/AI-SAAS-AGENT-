@@ -2,18 +2,12 @@
 
 import { ErrorState } from "@/components/error-state"
 import { LoadingState } from "@/components/loading-state"
-import { Button } from "@/components/ui/button"
-import { DataTable } from "@/components/ui/data-table"
 import { useTRPC } from "@/trpc/client"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { ColumnDef } from "@tanstack/react-table"
-import { Plus, ChevronRight } from "lucide-react"
-import Link from "next/link"
+import { ChevronRight } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { GeneratedAvatar } from "@/components/generated-avatar"
 import { useMeetingsFilter } from "@/modules/meetings/hooks/use-meetings-filter"
-
-import type { MeetingGetMany } from "@/modules/meetings/types"
 
 interface MeetingCardProps {
   id: string;
@@ -31,7 +25,7 @@ interface MeetingCardProps {
 
 const MeetingCard = ({ meeting }: { meeting: MeetingCardProps }) => {
   const router = useRouter()
-  
+
   const statusColors = {
     upcoming: 'bg-yellow-500',
     active: 'bg-green-500',
@@ -40,7 +34,7 @@ const MeetingCard = ({ meeting }: { meeting: MeetingCardProps }) => {
     cancelled: 'bg-red-500',
     in_progress: 'bg-blue-500',
   }
-  
+
   const handleCardClick = (e: React.MouseEvent) => {
     // Prevent event bubbling to avoid any parent click handlers
     e.stopPropagation();
@@ -58,7 +52,7 @@ const MeetingCard = ({ meeting }: { meeting: MeetingCardProps }) => {
   const statusDisplay = statusText[meeting.status as keyof typeof statusText] || meeting.status
 
   return (
-    <div 
+    <div
       className="border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
       onClick={handleCardClick}
     >
@@ -71,14 +65,14 @@ const MeetingCard = ({ meeting }: { meeting: MeetingCardProps }) => {
           {meeting.createdAt ? new Date(meeting.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'No time set'}
         </div>
       </div>
-      
+
       <h3 className="font-medium mb-2">{meeting.name}</h3>
-      
+
       <div className="flex items-center justify-between mt-4">
         <div className="flex items-center gap-3">
           <div className="relative">
-            <GeneratedAvatar 
-              seed={meeting.agent?.name || 'Agent'} 
+            <GeneratedAvatar
+              seed={meeting.agent?.name || 'Agent'}
               variant="botttsNeutral"
               className="h-10 w-10"
             />
@@ -97,15 +91,11 @@ const MeetingCard = ({ meeting }: { meeting: MeetingCardProps }) => {
   )
 }
 
-const useMeetings = () => {
-  const trpc = useTRPC()
-  return useSuspenseQuery(trpc.meetings.getMany.queryOptions({}))
-}
+
 
 export const MeetingView = () => {
-  const router = useRouter()
   const trpc = useTRPC()
-  const [filters,setFilter]=useMeetingsFilter();
+  const [filters] = useMeetingsFilter();
   const { data } = useSuspenseQuery(trpc.meetings.getMany.queryOptions({
     ...filters
   }))
@@ -124,13 +114,13 @@ export const MeetingView = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {data?.items?.map((meeting) => (
-            <MeetingCard 
-              key={meeting.id} 
+            <MeetingCard
+              key={meeting.id}
               meeting={meeting}
             />
-            
+
           ))}
-          
+
         </div>
       )}
     </div>
@@ -147,7 +137,7 @@ export const MeetingsViewLoading = () => {
   );
 };
 
-export const  MeetingsViewError = () => {
+export const MeetingsViewError = () => {
   return (
     <ErrorState
       title="Error Loading Agents"

@@ -45,7 +45,7 @@ export const agentsRouter = createTRPCRouter({
         .delete(agents)
         .where(
           and(
-            eq(agents.id, agents.id),
+            eq(agents.id, input.id),
             eq(agents.userId, ctx.auth.user.id),
           ),
         )

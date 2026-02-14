@@ -13,7 +13,7 @@ export const CallEnded = () => {
   const { hasBrowserPermission: hasMicPermission } = useMicrophoneState();
   const { hasBrowserPermission: hasCameraPermission } = useCameraState();
 
-  const hasBrowserMediaPermission = hasCameraPermission && hasMicPermission;
+
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen w-full bg-[radial-gradient(circle,_#0F5A44,_#062E24)]">
