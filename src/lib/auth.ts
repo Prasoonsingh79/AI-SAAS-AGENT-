@@ -34,5 +34,6 @@ export const auth = betterAuth({
         "https://ai-agent-meet-lgl8-ganeoou2y-prasoonsingh79s-projects.vercel.app",
         "https://ai-agent-meet-dlto.vercel.app",
         "https://ai-agent-meet-dlto-git-main-prasoonsingh79s-projects.vercel.app",
-    ].filter(Boolean),
+        "https://ai-saas-agent-chi.vercel.app",
+    ].filter(Boolean) as string[],
 });
