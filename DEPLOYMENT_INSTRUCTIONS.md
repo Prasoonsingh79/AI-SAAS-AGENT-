@@ -24,6 +24,12 @@ To ensure your authentication works correctly in production, please verify the f
 4.  **Database**:
     -   `DATABASE_URL` (PostgreSQL connection string).
 
+5.  **Inngest (Crucial for deployed Agents)**:
+    -   *Do not* run `npx inngest-cli dev` for the deployed app. That is only for local testing.
+    -   Instead, go to [Inngest Cloud](https://app.inngest.com).
+    -   Connect your Vercel project or manually add `INNGEST_EVENT_KEY` and `INNGEST_SIGNING_KEY` to your Vercel Environment Variables.
+    -   Once set, Inngest will automatically sync your deployed functions at `https://your-project.vercel.app/api/inngest`.
+
 ## Rate Limiting
 
 I have relaxed the rate limiting configuration in `src/lib/auth.ts` to allow 100 requests per 60 seconds. This should prevent the `429 Too Many Requests` error you were seeing during testing.
