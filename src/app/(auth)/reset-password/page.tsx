@@ -4,7 +4,7 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useState, useEffect, Suspense } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
@@ -72,12 +72,12 @@ function ResetPasswordContent() {
                     setIsLoading(false);
                     setTimeout(() => router.push("/sign-in"), 3000);
                 },
-                onError: (ctx: any) => {
+                onError: (ctx: { error: { message: string } }) => {
                     setError(ctx.error.message);
                     setIsLoading(false);
                 }
             })
-        } catch (err) {
+        } catch {
             setError("An error occurred. Please try again.");
             setIsLoading(false);
         }

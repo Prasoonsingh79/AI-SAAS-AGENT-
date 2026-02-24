@@ -5,7 +5,6 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -30,7 +29,6 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export default function ForgotPasswordPage() {
-    const router = useRouter();
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -56,12 +54,12 @@ export default function ForgotPasswordPage() {
                     setSuccess(true);
                     setIsLoading(false);
                 },
-                onError: (ctx: any) => {
+                onError: (ctx: { error: { message: string } }) => {
                     setError(ctx.error.message);
                     setIsLoading(false);
                 }
             })
-        } catch (err) {
+        } catch {
             setError("An error occurred. Please try again.");
             setIsLoading(false);
         }
