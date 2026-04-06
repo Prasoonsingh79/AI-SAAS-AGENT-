@@ -66,12 +66,14 @@
     "inngest": "^3.49.3",
     "input-otp": "^1.4.2",
     "jsonl-parse-stringify": "^1.0.3",
+    "jspdf": "^4.2.1",
     "lucide-react": "^0.539.0",
     "nanoid": "^5.1.5",
     "next": "^15.5.10",
     "next-themes": "^0.4.6",
     "ngrok": "^5.0.0-beta.2",
     "nuqs": "^2.4.3",
+    "openai": "^6.33.0",
     "react": "19.1.0",
     "react-day-picker": "^9.8.1",
     "react-dom": "19.1.0",
@@ -86,7 +88,9 @@
     "tailwind-merge": "^3.3.1",
     "vaul": "^1.1.2",
     "winston": "^3.19.0",
-    "zod": "^3.22.4"
+    "z": "^1.0.9",
+    "zod": "^3.25.76",
+    "zr": "^0.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

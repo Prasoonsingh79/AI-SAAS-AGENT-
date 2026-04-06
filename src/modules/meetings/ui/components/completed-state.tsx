@@ -21,9 +21,12 @@ import { StreamTranscriptItem } from "../../types";
 import { GeneratedAvatar } from "@/components/generated-avatar";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { formatDuration } from "@/lib/utils";
-
-interface Props {
+import { useTRPC } from "@/trpc/client";
+import { jsPDF } from "jspdf";
+import { Input } from "@/components/ui/input";
+import { useMutation } from "@tanstack/react-query";interface Props {
     data: MeetingGetOne;
 }
 
@@ -145,13 +148,57 @@ export const CompletedState = ({ data }: Props) => {
                                     {data.summary}
                                 </Markdown>
                             </div>
+
+                            {/* Structured AI Outputs */}
+                            {(data as any).sentiment && (
+                                <div className="mt-4 flex items-center gap-2">
+                                  <span className="font-semibold text-sm">Sentiment:</span>
+                                  <Badge className={
+                                    (data as any).sentiment === 'Positive' ? 'bg-green-500' :
+                                    (data as any).sentiment === 'Negative' ? 'bg-red-500' : 'bg-gray-500'
+                                  }>
+                                    {(data as any).sentiment}
+                                  </Badge>
+                                </div>
+                            )}
+
+                            {(data as any).keyDecisions?.length > 0 && (
+                                <div className="mt-4">
+                                  <h3 className="font-semibold text-lg mb-2">Key Decisions</h3>
+                                  <ul className="list-disc leading-relaxed list-inside">
+                                      {(data as any).keyDecisions.map((dec: string, i: number) => (
+                                          <li key={i}>{dec}</li>
+                                      ))}
+                                  </ul>
+                                </div>
+                            )}
+
+                            {(data as any).actionItems && (
+                                <div className="mt-4 flex flex-col gap-2">
+                                  <h3 className="font-semibold text-lg mb-2">Action Items</h3>
+                                  <div className="flex flex-col gap-2">
+                                  {(()=>{
+                                     try {
+                                        const actions = JSON.parse((data as any).actionItems);
+                                        return actions.map((act: any, i: number) => (
+                                           <div key={i} className="flex items-center justify-between bg-slate-50 p-2 rounded-md border">
+                                              <span className="text-sm font-medium">{act.task}</span>
+                                              <Badge variant="outline">{act.assignedTo}</Badge>
+                                           </div>
+                                        ));
+                                     } catch { return null; }
+                                  })()}
+                                  </div>
+                                </div>
+                            )}
+
                         </div>
                     </div>
                 </TabsContent>
                 <TabsContent value="transcript">
                     <div className="bg-white rounded-lg border p-4">
                         {data.transcriptUrl ? (
-                            <TranscriptView url={data.transcriptUrl} agentId={data.agent.id} agentName={data.agent.name} />
+                            <TranscriptView url={data.transcriptUrl} agentId={data.agent.id} agentName={data.agent.name} meetingName={data.name} meetingDate={data.startedAt} />
                         ) : (
                             <div className="flex flex-col items-center justify-center p-8 text-center text-muted-foreground">
                                 <p>No transcript available for this meeting.</p>
@@ -161,11 +208,7 @@ export const CompletedState = ({ data }: Props) => {
                 </TabsContent>
                 <TabsContent value="Chat">
                     <div className="bg-white rounded-lg border p-4">
-                        <div className="flex flex-col items-center justify-center p-8 text-center text-muted-foreground">
-                            <SparklesIcon className="size-8 mb-2" />
-                            <p className="font-medium">Ask AI</p>
-                            <p className="text-sm">Chat with your meeting insights coming soon.</p>
-                        </div>
+                      <AskAI meetingId={data.id} />
                     </div>
                 </TabsContent>
             </Tabs>
@@ -177,9 +220,11 @@ interface TranscriptViewProps {
     url: string;
     agentId: string;
     agentName: string;
+    meetingName: string;
+    meetingDate: Date | string | null;
 }
 
-const TranscriptView = ({ url, agentId, agentName }: TranscriptViewProps) => {
+const TranscriptView = ({ url, agentId, agentName, meetingName, meetingDate }: TranscriptViewProps) => {
     const [transcript, setTranscript] = useState<StreamTranscriptItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -196,31 +241,55 @@ const TranscriptView = ({ url, agentId, agentName }: TranscriptViewProps) => {
             })
             .then((text) => {
                 try {
-                    // Try to parse as regular JSON first (in case it's a single array)
                     const data = JSON.parse(text);
                     if (Array.isArray(data)) {
                         setTranscript(data);
                         return;
                     }
-                } catch {
-                    // If regular JSON parse fails, try JSONL (newline delimited)
-                }
+                } catch {}
 
                 try {
                     const lines = text.split('\n').filter(line => line.trim() !== '');
                     const data = lines.map(line => JSON.parse(line));
                     setTranscript(data);
                 } catch (err) {
-                    console.error("Error parsing transcript:", err);
                     setError("Failed to parse transcript.");
                 }
             })
-            .catch((err) => {
-                console.error("Error fetching transcript:", err);
+            .catch(() => {
                 setError("Failed to load transcript.");
             })
             .finally(() => setLoading(false));
     }, [url]);
+
+    const handleExportPDF = () => {
+        const doc = new jsPDF();
+        let yPos = 20;
+        doc.setFontSize(16);
+        doc.text(`Transcript: ${meetingName}`, 14, yPos);
+        yPos += 8;
+        doc.setFontSize(10);
+        if (meetingDate) {
+           doc.text(`Date: ${format(new Date(meetingDate), "PPP")}`, 14, yPos);
+           yPos += 10;
+        }
+
+        doc.setFontSize(12);
+        transcript.forEach((item) => {
+            const speaker = item.speaker_id === agentId ? agentName : "User";
+            const text = `${speaker} [${formatDuration(item.start_ts)}]: ${item.text}`;
+            const splitText = doc.splitTextToSize(text, 180);
+            
+            if (yPos + (splitText.length * 6) > 280) {
+                doc.addPage();
+                yPos = 20;
+            }
+            doc.text(splitText, 14, yPos);
+            yPos += splitText.length * 6;
+        });
+
+        doc.save(`${meetingName.replace(/\s+/g, "_")}_transcript.pdf`);
+    };
 
     if (loading) {
         return (
@@ -231,38 +300,82 @@ const TranscriptView = ({ url, agentId, agentName }: TranscriptViewProps) => {
     }
 
     if (error) {
-        return (
-            <div className="flex flex-col items-center justify-center p-8 text-center text-red-500">
-                <p>{error}</p>
-            </div>
-        );
+        return <div className="text-center text-red-500 p-8">{error}</div>;
     }
 
-    if (!transcript || transcript.length === 0) {
-        return (
-            <div className="flex flex-col items-center justify-center p-8 text-center text-muted-foreground">
-                <p>Transcript is empty.</p>
-            </div>
-        );
+    if (!transcript.length) {
+        return <div className="text-center text-muted-foreground p-8">Transcript is empty.</div>;
     }
 
     return (
-        <div className="flex flex-col gap-y-4 p-4 max-h-[500px] overflow-y-auto">
-            {transcript.map((item, index) => (
-                <div key={index} className="flex flex-col gap-1">
-                    <div className="flex items-center gap-2">
-                        <span className="text-xs font-medium text-muted-foreground">
-                            {item.speaker_id === agentId ? agentName : "User"}
-                        </span>
-                        <span className="text-[10px] text-muted-foreground">
-                            {formatDuration(item.start_ts)}
-                        </span>
+        <div className="flex flex-col gap-y-4">
+            <div className="flex justify-end">
+                <Button size="sm" variant="outline" onClick={handleExportPDF}>
+                    <FileTextIcon className="size-4 mr-2"/> Export as PDF
+                </Button>
+            </div>
+            <div className="flex flex-col gap-y-4 p-4 max-h-[500px] overflow-y-auto bg-slate-50 border rounded-lg">
+                {transcript.map((item, index) => (
+                    <div key={index} className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                            <span className="text-xs font-medium text-muted-foreground">
+                                {item.speaker_id === agentId ? agentName : "User"}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground">
+                                {formatDuration(item.start_ts)}
+                            </span>
+                        </div>
+                        <p className="text-sm leading-relaxed">
+                            {item.text}
+                        </p>
                     </div>
-                    <p className="text-sm leading-relaxed">
-                        {item.text}
-                    </p>
+                ))}
+            </div>
+        </div>
+    )
+}
+
+function AskAI({ meetingId }: { meetingId: string }) {
+    const trpc = useTRPC();
+    const [query, setQuery] = useState("");
+    const [result, setResult] = useState("");
+
+    const searchMutation = useMutation(
+        trpc.meetings.smartSearch.mutationOptions({
+            onSuccess: (data) => setResult(data.result),
+        })
+    );
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (query.trim()) {
+            searchMutation.mutate({ meetingId, query });
+        }
+    };
+
+    return (
+        <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-2 mb-2">
+                <SparklesIcon className="size-5 text-purple-500" />
+                <h3 className="text-lg font-semibold">Semantic Smart Search</h3>
+            </div>
+            <form onSubmit={handleSearch} className="flex gap-2">
+                <Input 
+                   value={query} 
+                   onChange={(e) => setQuery(e.target.value)} 
+                   placeholder="e.g. When did we discuss API?" 
+                   disabled={searchMutation.isPending}
+                />
+                <Button type="submit" disabled={searchMutation.isPending}>
+                    {searchMutation.isPending ? "Searching..." : "Search"}
+                </Button>
+            </form>
+
+            {result && (
+                <div className="mt-4 p-4 bg-purple-50 border border-purple-100 rounded-lg whitespace-pre-wrap text-sm leading-relaxed text-slate-800">
+                    {result}
                 </div>
-            ))}
+            )}
         </div>
     )
 }

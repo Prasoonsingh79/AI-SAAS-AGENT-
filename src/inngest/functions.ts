@@ -3,40 +3,15 @@ import { agents, meetings, user } from "@/db/schema";
 import { inngest } from "@/inngest/client";
 import { StreamTranscriptItem } from "@/modules/meetings/types";
 import { eq, inArray } from "drizzle-orm";
-import JSON from "jsonl-parse-stringify"
-import { createAgent, openai, TextMessage } from "@inngest/agent-kit";
+import JSONParser from "jsonl-parse-stringify";
+import OpenAI from "openai";
 
 if (!process.env.OPENAI_API_KEY) {
     console.error('Error: OPENAI_API_KEY is not set in environment variables');
     throw new Error('OpenAI API key is required');
 }
 
-const summarizer = createAgent({
-    name: "summarizer",
-    system: `You are an expert summarizer. You write readable, concise, simple content. You are given a transcript of a meeting and you need to summarize it.
-
-Use the following markdown structure for every output:
-
-### Overview
-Provide a detailed, engaging summary of the session's content. Focus on major features, user workflows, and any key takeaways. Write in a narrative style, using full sentences. Highlight unique or powerful aspects of the product, platform, or discussion.
-
-### Notes
-Break down key content into thematic sections with timestamp ranges. Each section should summarize key points, actions, or demos in bullet format.
-
-Example:
-#### Section Name
-- Main point or demo shown here
-- Another key insight or interaction
-- Follow-up tool or explanation provided
-
-#### Next Section
-- Feature X automatically does Y
-- Mention of integration with Z`.trim(),
-    model: openai({
-        model: "gpt-4o",
-        apiKey: process.env.OPENAI_API_KEY
-    })
-});
+const ai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export const meetingsProcessing = inngest.createFunction(
     { id: "meetings/processing" },
@@ -46,7 +21,7 @@ export const meetingsProcessing = inngest.createFunction(
             return fetch(event.data.transcriptUrl).then((res) => res.text());
         });
         const transcript = await step.run("parse-transcript", async () => {
-            return JSON.parse<StreamTranscriptItem>(response);
+            return JSONParser.parse<StreamTranscriptItem>(response);
         });
 
         const transcriptWithSpeakers = await step.run("add-speakers", async () => {
@@ -94,18 +69,52 @@ export const meetingsProcessing = inngest.createFunction(
                 };
             });
         });
-        const { output } = await summarizer.run(
-            "Summarize the Following transcript:" +
-            JSON.stringify(transcriptWithSpeakers)
-        );
+
+        // Calculate Talk Time
+        const talkTime = await step.run("calculate-talk-time", async () => {
+            const userTalkTime: Record<string, number> = {};
+            transcriptWithSpeakers.forEach((item) => {
+                const duration = ((item as any).stop_ts || item.shop_ts || 0) - (item.start_ts || 0);
+                if (duration > 0 && item.user.name !== "Unknown") {
+                    userTalkTime[item.user.name] = (userTalkTime[item.user.name] || 0) + duration;
+                }
+            });
+            return userTalkTime;
+        });
+
+        const aiInsights = await step.run("generate-ai-insights", async () => {
+             const aiResponse = await ai.chat.completions.create({
+                model: "gpt-4o-mini",
+                response_format: { type: "json_object" },
+                messages: [
+                    { 
+                      role: "system", 
+                      content: `You are an expert meeting assistant. Output ONLY valid JSON matching this schema: 
+{ 
+  "summary": "Short paragraph summary", 
+  "keyDecisions": ["Decision 1", "Decision 2"], 
+  "actionItems": [ { "task": "Task description", "assignedTo": "Person Name" } ], 
+  "sentiment": "Positive" | "Neutral" | "Negative" 
+}` 
+                    },
+                    { role: "user", content: "Here is the transcript:\\n" + JSON.stringify(transcriptWithSpeakers) }
+                ]
+             });
+             return global.JSON.parse(aiResponse.choices[0].message.content || '{}');
+        });
+
         await step.run("save-summary", async () => {
             await db
                 .update(meetings)
                 .set({
-                    summary: (output[0] as TextMessage).content as string,
+                    summary: aiInsights.summary || "",
+                    keyDecisions: aiInsights.keyDecisions || [],
+                    actionItems: global.JSON.stringify(aiInsights.actionItems || []),
+                    sentiment: aiInsights.sentiment || "Neutral",
+                    talkTimePerUser: global.JSON.stringify(talkTime || {}),
                     status: "completed",
                 })
                 .where(eq(meetings.id, event.data.meetingId))
         })
     },
-);   
+);

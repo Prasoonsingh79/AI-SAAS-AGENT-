@@ -8,13 +8,11 @@ import { ErrorBoundary } from 'react-error-boundary';
 import MeetingIdView, { MeetingsViewError } from '@/modules/meetings/ui/views/meeting-id-view';
 import { MeetingsViewLoading } from '@/modules/meetings/ui/views/meetings-view';
 
-interface Props {
-  params: Promise<{
-    meetingId: string;
-  }>;
-}
-
-const Page = async ({ params }: Props) => {
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ meetingId: string }>;
+}) {
   const { meetingId } = await params;
 
   // Get the session using the auth utility from your project
@@ -42,4 +40,3 @@ const Page = async ({ params }: Props) => {
   );
 
 }
-export default Page;

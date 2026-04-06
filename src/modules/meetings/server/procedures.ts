@@ -14,7 +14,9 @@ import { meetingsInsertSchema, meetingsUpdateSchema } from "../schemas";
 import { MeetingStatus } from "../types";
 import { streamVideo } from "@/lib/stream-video";
 import { GeneratedAvatarUri } from "@/lib/avatar";
-// Removed unused import
+import OpenAI from "openai";
+
+const ai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
 
 export const meetingsRouter = createTRPCRouter({
   generateToken: protectedProcedure.mutation(async ({ ctx }) => {
@@ -302,4 +304,79 @@ export const meetingsRouter = createTRPCRouter({
       upcomingCount: upcomingMeetings.count
     };
   }),
+
+  smartSearch: protectedProcedure
+    .input(z.object({ meetingId: z.string(), query: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      const [meeting] = await db
+        .select()
+        .from(meetings)
+        .where(
+          and(
+            eq(meetings.id, input.meetingId),
+            eq(meetings.userId, ctx.auth.user.id)
+          )
+        );
+
+      if (!meeting) throw new TRPCError({ code: "NOT_FOUND" });
+      if (!meeting.transcriptUrl) throw new TRPCError({ code: "BAD_REQUEST", message: "No transcript available" });
+
+      const res = await fetch(meeting.transcriptUrl);
+      const transcriptJSON = await res.text();
+
+      const aiResponse = await ai.chat.completions.create({
+         model: "gpt-4o-mini",
+         messages: [
+            { 
+               role: "system", 
+               content: "You are an expert AI search assistant. Read the transcript JSON and output the exact relevant parts or a summary that directly answers the user's query." 
+            },
+            {
+               role: "user",
+               content: `Query: ${input.query}\n\nTranscript: ${transcriptJSON}`
+            }
+         ]
+      });
+
+      return { result: aiResponse.choices[0].message.content || "No results found." };
+    }),
+
+  getAnalytics: protectedProcedure.query(async ({ ctx }) => {
+    const allMeetings = await db
+      .select({
+        status: meetings.status,
+        talkTimePerUser: meetings.talkTimePerUser,
+        duration: sql<number>`EXTRACT(EPOCH FROM (${meetings.endedAt} - ${meetings.startedAt}))`.as("duration"),
+      })
+      .from(meetings)
+      .where(eq(meetings.userId, ctx.auth.user.id));
+
+    let totalDuration = 0;
+    let completedCount = 0;
+    const talkTimeAgg: Record<string, number> = {};
+
+    for (const m of allMeetings) {
+       if (m.duration) totalDuration += m.duration;
+       if (m.status === MeetingStatus.COMPLETED) completedCount++;
+
+       if (m.talkTimePerUser) {
+           try {
+             const parsed = JSON.parse(m.talkTimePerUser);
+             for (const [user, time] of Object.entries(parsed)) {
+                 talkTimeAgg[user] = (talkTimeAgg[user] || 0) + Number(time);
+             }
+           } catch(e) {}
+       }
+    }
+
+    const avgDuration = completedCount > 0 ? totalDuration / completedCount : 0;
+
+    return {
+      totalMeetings: allMeetings.length,
+      averageDuration: avgDuration,
+      aiUsageCount: completedCount, 
+      talkTimePerUser: talkTimeAgg
+    };
+  }),
+
 });

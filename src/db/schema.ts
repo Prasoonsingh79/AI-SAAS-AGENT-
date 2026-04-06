@@ -99,6 +99,10 @@ export const meetings = pgTable("meetings",{
   transcriptUrl:text("transcript_url"),
   recordingUrl:text("recording_url"),
   summary:text("summary"),
+  keyDecisions: text("key_decisions").array(),
+  actionItems: text("action_items"), // Storing array of { task: string, assignedTo: string } as JSON string for now to be safe, or use jsonb() "action_items"
+  sentiment: text("sentiment"), 
+  talkTimePerUser: text("talk_time_per_user"), // Storing JSON string
   createdAt:timestamp("created_at").notNull().defaultNow(),
   updatedAt:timestamp("updated_at").notNull().defaultNow(),
 
