@@ -79,17 +79,17 @@ export const DashboardNavbar = () => {
   return (
     <>
       <DashboardCommand open={commandOpen} setOpen={setCammandOpen} />
-      <nav className="flex items-center justify-between px-6 py-3 border-b border-white/5 bg-[#0a0a0f]/80 backdrop-blur-xl relative">
+      <nav className="flex items-center justify-between px-6 py-3 border-b border-slate-700/50 bg-slate-900/80 backdrop-blur-xl relative">
         <div className="flex items-center gap-x-3">
           <Button
-            className="h-10 w-[260px] justify-start font-normal text-zinc-400 bg-white/5 hover:bg-white/10 hover:text-white border border-white/5 transition-all duration-200"
+            className="h-10 w-[260px] justify-start font-normal text-slate-400 bg-slate-800/50 hover:bg-slate-800 hover:text-white border border-slate-700/50 transition-all duration-200"
             variant="outline"
             size="sm"
             onClick={() => setCammandOpen((open) => !open)}
           >
-            <SearchIcon className="h-4 w-4 mr-2 text-zinc-500" />
-            <span className="text-zinc-500">Search...</span>
-            <kbd className="ml-auto pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border border-white/10 bg-white/5 px-1.5 font-mono text-[10px] font-medium text-zinc-500">
+            <SearchIcon className="h-4 w-4 mr-2 text-slate-500" />
+            <span className="text-slate-500">Search...</span>
+            <kbd className="ml-auto pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border border-slate-700 bg-slate-800 px-1.5 font-mono text-[10px] font-medium text-slate-500">
               <span className="text-xs">⌘K</span>
             </kbd>
           </Button>
@@ -100,7 +100,7 @@ export const DashboardNavbar = () => {
             <Button
               variant="ghost"
               size="icon"
-              className="text-zinc-400 hover:text-white hover:bg-white/5 relative"
+              className="text-slate-400 hover:text-white hover:bg-slate-800/50 relative"
               onClick={() => setNotificationsOpen(!notificationsOpen)}
             >
               <BellIcon className="h-5 w-5" />
@@ -112,8 +112,8 @@ export const DashboardNavbar = () => {
             </Button>
 
             {notificationsOpen && (
-              <div className="absolute right-0 top-full mt-2 w-80 bg-[#0f0f17] border border-white/10 rounded-xl shadow-2xl shadow-black/50 z-50 overflow-hidden">
-                <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
+              <div className="absolute right-0 top-full mt-2 w-80 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl shadow-black/50 z-50 overflow-hidden">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700/50">
                   <h3 className="font-semibold text-white">Notifications</h3>
                   <div className="flex items-center gap-2">
                     {unreadCount?.count ? (
@@ -126,7 +126,7 @@ export const DashboardNavbar = () => {
                     ) : null}
                     <button
                       onClick={() => setNotificationsOpen(false)}
-                      className="text-zinc-500 hover:text-white"
+                      className="text-slate-500 hover:text-white"
                     >
                       <XIcon className="h-4 w-4" />
                     </button>
@@ -135,9 +135,9 @@ export const DashboardNavbar = () => {
 
                 <div className="max-h-96 overflow-y-auto">
                   {isLoading ? (
-                    <div className="p-4 text-center text-zinc-500">Loading...</div>
+                    <div className="p-4 text-center text-slate-500">Loading...</div>
                   ) : notifications?.length === 0 ? (
-                    <div className="p-4 text-center text-zinc-500">
+                    <div className="p-4 text-center text-slate-500">
                       <BellIcon className="h-8 w-8 mx-auto mb-2 opacity-50" />
                       <p className="text-sm">No notifications yet</p>
                     </div>
@@ -147,8 +147,8 @@ export const DashboardNavbar = () => {
                         key={notification.id}
                         href={getNotificationLink(notification.type, notification.meetingId)}
                         className={cn(
-                          "block px-4 py-3 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0",
-                          !notification.read && "bg-indigo-500/5"
+                          "block px-4 py-3 hover:bg-slate-700/30 transition-colors border-b border-slate-700/30 last:border-0",
+                          !notification.read && "bg-indigo-500/10"
                         )}
                         onClick={() => {
                           if (!notification.read) {
@@ -160,11 +160,11 @@ export const DashboardNavbar = () => {
                         <div className="flex items-start gap-3">
                           <span className="text-lg">{getNotificationIcon(notification.type)}</span>
                           <div className="flex-1 min-w-0">
-                            <p className={cn("text-sm font-medium truncate", notification.read ? "text-zinc-400" : "text-white")}>
+                            <p className={cn("text-sm font-medium truncate", notification.read ? "text-slate-400" : "text-white")}>
                               {notification.title}
                             </p>
-                            <p className="text-xs text-zinc-500 line-clamp-2 mt-0.5">{notification.message}</p>
-                            <p className="text-xs text-zinc-600 mt-1">
+                            <p className="text-xs text-slate-500 line-clamp-2 mt-0.5">{notification.message}</p>
+                            <p className="text-xs text-slate-600 mt-1">
                               {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
                             </p>
                           </div>
@@ -179,7 +179,7 @@ export const DashboardNavbar = () => {
 
                 <a
                   href="/notifications"
-                  className="block px-4 py-3 text-center text-sm text-indigo-400 hover:text-indigo-300 border-t border-white/5 hover:bg-white/5 transition-colors"
+                  className="block px-4 py-3 text-center text-sm text-indigo-400 hover:text-indigo-300 border-t border-slate-700/50 hover:bg-slate-700/30 transition-colors"
                 >
                   View all notifications
                 </a>

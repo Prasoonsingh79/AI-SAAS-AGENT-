@@ -11,7 +11,7 @@ const Layout = ({ children }: Props) => {
   return (
     <SidebarProvider>
       <DashboardSidebar/>
-      <main className="flex flex-col min-h-screen w-full bg-gradient-to-br from-[#050507] via-[#09090b] to-[#0a0a0f] ml-64">
+      <main className="flex flex-col min-h-screen w-full bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] ml-64">
         <DashboardNavbar/>
         <div className="flex-1 overflow-auto">
           {children}
