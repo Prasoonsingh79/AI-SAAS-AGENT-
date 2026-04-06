@@ -186,6 +186,7 @@ export const DashboardNavbar = () => {
               </div>
             )}
           </div>
+        </div>
       </nav>
     </>
   );
