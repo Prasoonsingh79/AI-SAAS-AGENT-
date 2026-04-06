@@ -1,5 +1,25 @@
 import { pgTable, text, timestamp, boolean, pgEnum } from "drizzle-orm/pg-core";
 import {nanoid} from "nanoid"
+
+export const notificationType = pgEnum("notification_type", [
+  "meeting_reminder",
+  "meeting_started",
+  "meeting_ended",
+  "meeting_cancelled",
+  "summary_ready"
+]);
+
+export const notifications = pgTable("notifications", {
+  id: text("id").primaryKey().$defaultFn(() => nanoid()),
+  userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  type: notificationType("type").notNull(),
+  title: text("title").notNull(),
+  message: text("message").notNull(),
+  meetingId: text("meeting_id"),
+  read: boolean("read").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
