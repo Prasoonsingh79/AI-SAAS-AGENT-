@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   ColumnDef,
@@ -11,7 +11,6 @@ import {
   Table,
   TableBody,
   TableCell,
-
   TableRow,
 } from "@/components/ui/table"
 
@@ -33,9 +32,8 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <div className="overflow-hidden rounded-lg border bg-background">
+    <div className="overflow-hidden rounded-xl border border-green-100 bg-white shadow-sm">
       <Table>
-      
         <TableBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
@@ -43,10 +41,10 @@ export function DataTable<TData, TValue>({
               onClick={()=> onRowClick?. (row.original)}
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
-                className="cursor-pointer"
+                className="cursor-pointer hover:bg-green-50/70 border-b border-green-50 last:border-0"
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="text-sm p-4">
+                  <TableCell key={cell.id} className="text-sm p-4 text-slate-600">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -54,7 +52,7 @@ export function DataTable<TData, TValue>({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-19 text-muted-foreground">
+              <TableCell colSpan={columns.length} className="h-24 text-center text-green-400">
                 No results.
               </TableCell>
             </TableRow>

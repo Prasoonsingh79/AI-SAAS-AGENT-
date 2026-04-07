@@ -36,11 +36,11 @@ export const AgentsView = () => {
      {data.items.length === 0 && (
       <EmptyState
       title="Create your first Agent"
-      description="Create your agent to join meeting.It will help you to assist you"
+      description="Create your agent to join meeting. It will help assist you"
       />
      )}
-    </div>
-    
+   </div>
+   
   )
 };
 
@@ -57,7 +57,7 @@ export const AgentsViewError = () => {
   return (
     <ErrorState
       title="Error Loading Agents"
-      description="Somethings went wrong"
+      description="Something went wrong"
     />
   );
 };

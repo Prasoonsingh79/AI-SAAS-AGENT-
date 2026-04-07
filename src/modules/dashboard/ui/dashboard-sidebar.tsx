@@ -19,33 +19,33 @@ const secondSection = [
 export const DashboardSidebar = () => {
   const pathname = usePathname();
   return (
-    <div className="flex h-screen w-64 flex-col bg-gradient-to-b from-[#1e1e2e] via-[#1a1a28] to-[#181825] border-r border-[#45475a] shadow-xl fixed left-0 top-0">
+    <div className="flex h-screen w-64 flex-col bg-gradient-to-b from-[#e0f2fe] via-[#d0e8fd] to-[#bad9fb] border-r border-[#93c5fd] shadow-lg fixed left-0 top-0">
       {/* Sidebar Header */}
       <div className="flex items-center gap-3 px-5 py-6">
         <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500 rounded-xl blur-md opacity-40" />
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-xl blur-md opacity-30" />
           <Image
             src="/logp.jpg"
             height={40}
             width={40}
             alt="logo"
-            className="relative rounded-xl shadow-lg"
+            className="relative rounded-xl shadow-md"
           />
         </div>
         <div className="flex flex-col">
-          <p className="text-lg font-bold tracking-wide text-[#cdd6f4]">Apex</p>
-          <p className="text-xs text-[#6c7086] -mt-1">Agents</p>
+          <p className="text-lg font-bold tracking-wide text-[#1e40af]">Apex</p>
+          <p className="text-xs text-[#3b82f6] -mt-1">Agents</p>
         </div>
       </div>
 
       {/* Divider */}
-      <div className="mx-5 mb-4 h-px bg-gradient-to-r from-transparent via-[#45475a] to-transparent" />
+      <div className="mx-5 mb-4 h-px bg-gradient-to-r from-transparent via-[#93c5fd] to-transparent" />
 
       {/* Main Navigation */}
       <div className="flex-1 overflow-auto px-3 space-y-6">
         {/* First Section */}
         <nav className="space-y-1">
-          <p className="px-3 text-xs font-medium text-[#6c7086] uppercase tracking-wider mb-2">Menu</p>
+          <p className="px-3 text-xs font-medium text-[#64748b] uppercase tracking-wider mb-2">Menu</p>
           {firstSection.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -55,11 +55,11 @@ export const DashboardSidebar = () => {
                 className={cn(
                   "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
                   isActive
-                    ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-[#89b4fa] border border-blue-500/30 shadow-lg shadow-blue-500/10"
-                    : "text-[#a6adc8] hover:bg-[#45475a]/50 hover:text-[#cdd6f4]"
+                    ? "bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700 border border-blue-200 shadow-sm"
+                    : "text-[#475569] hover:bg-blue-50 hover:text-blue-700"
                 )}
               >
-                <item.icon className={cn("h-5 w-5 flex-shrink-0", isActive ? "text-[#89b4fa]" : "text-[#6c7086]")} />
+                <item.icon className={cn("h-5 w-5 flex-shrink-0", isActive ? "text-blue-500" : "text-[#64748b]")} />
                 {item.label}
               </Link>
             );
@@ -68,8 +68,8 @@ export const DashboardSidebar = () => {
 
         {/* Second Section */}
         <div>
-          <div className="mx-3 mb-3 h-px bg-gradient-to-r from-transparent via-[#45475a] to-transparent" />
-          <p className="px-3 text-xs font-medium text-[#6c7086] uppercase tracking-wider mb-2">Settings</p>
+          <div className="mx-3 mb-3 h-px bg-gradient-to-r from-transparent via-[#93c5fd] to-transparent" />
+          <p className="px-3 text-xs font-medium text-[#64748b] uppercase tracking-wider mb-2">Settings</p>
           <nav className="space-y-1">
             {secondSection.map((item) => {
               const isActive = pathname === item.href;
@@ -80,11 +80,11 @@ export const DashboardSidebar = () => {
                   className={cn(
                     "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
                     isActive
-                      ? "bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-[#f9e2af] border border-yellow-500/30 shadow-lg shadow-yellow-500/10"
-                      : "text-[#a6adc8] hover:bg-[#45475a]/50 hover:text-[#cdd6f4]"
+                      ? "bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 border border-purple-200 shadow-sm"
+                      : "text-[#475569] hover:bg-purple-50 hover:text-purple-700"
                   )}
                 >
-                  <item.icon className={cn("h-5 w-5 flex-shrink-0", isActive ? "text-[#f9e2af]" : "text-[#6c7086]")} />
+                  <item.icon className={cn("h-5 w-5 flex-shrink-0", isActive ? "text-purple-500" : "text-[#64748b]")} />
                   {item.label}
                 </Link>
               );
@@ -94,7 +94,7 @@ export const DashboardSidebar = () => {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-[#45475a] bg-[#181825]/50 px-4 py-4 mt-auto">
+      <footer className="border-t border-[#93c5fd] bg-[#d0e8fd]/50 px-4 py-4 mt-auto">
         <DashboardUserButton />
       </footer>
     </div>

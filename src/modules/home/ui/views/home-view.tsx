@@ -27,10 +27,10 @@ export function HomeView() {
 
   if (isPending || !analyticsData || !meetingStats) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#1e1e2e] via-[#252535] to-[#1e1e2e]">
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#eefbf3] via-[#e8f5ef] to-[#dff7ea]">
         <div className="flex flex-col items-center gap-4">
-          <LoaderIcon className="size-8 animate-spin text-[#89b4fa]" />
-          <p className="text-[#6c7086] text-sm font-medium animate-pulse">Loading your workspace...</p>
+          <LoaderIcon className="size-8 animate-spin text-green-500" />
+          <p className="text-[#5a7a6a] text-sm font-medium animate-pulse">Loading your workspace...</p>
         </div>
       </div>
     );
@@ -51,24 +51,24 @@ export function HomeView() {
   }));
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] w-full bg-transparent text-[#cdd6f4] p-6 md:p-8 font-sans">
+    <div className="min-h-[calc(100vh-4rem)] w-full bg-transparent text-[#1a3d2e] p-6 md:p-8 font-sans">
       {/* Background Effects */}
-      <div className="fixed top-0 left-0 w-[600px] h-[600px] rounded-full bg-[#89b4fa]/10 blur-[200px] pointer-events-none" />
-      <div className="fixed bottom-0 right-0 w-[500px] h-[500px] rounded-full bg-[#cba6f7]/10 blur-[180px] pointer-events-none" />
+      <div className="fixed top-0 left-0 w-[600px] h-[600px] rounded-full bg-green-200/50 blur-[200px] pointer-events-none" />
+      <div className="fixed bottom-0 right-0 w-[500px] h-[500px] rounded-full bg-blue-200/50 blur-[180px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto w-full relative z-10 flex flex-col gap-8">
         
         {/* Header */}
         <header className="flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-6 duration-700 ease-out py-2">
            <div className="flex items-center gap-2">
-             <div className="inline-flex items-center rounded-full border border-[#89b4fa]/30 bg-[#89b4fa]/10 px-3 py-1 text-xs font-semibold text-[#89b4fa]">
+             <div className="inline-flex items-center rounded-full border border-green-200 bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
                <SparklesIcon className="mr-2 size-3.5" /> AI-Powered Workspace
              </div>
            </div>
-           <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-[#cdd6f4]">
-              Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#89b4fa] via-[#cba6f7] to-[#f38ba8]">{userName}</span>
+           <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-[#1a3d2e]">
+              Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 via-emerald-500 to-blue-500">{userName}</span>
            </h1>
-           <p className="text-[#a6adc8] text-lg max-w-2xl">
+           <p className="text-[#5a7a6a] text-lg max-w-2xl">
              Your intelligent command center. Monitor your meetings and AI agent performance in real-time.
            </p>
         </header>
@@ -76,60 +76,60 @@ export function HomeView() {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           
-          <div className="group relative overflow-hidden rounded-2xl border border-[#45475a] bg-[#313244] p-5 transition-all hover:border-[#89b4fa]/30 hover:bg-[#383850] hover:shadow-lg hover:shadow-[#89b4fa]/10">
+          <div className="group relative overflow-hidden rounded-2xl border border-green-200 bg-white p-5 shadow-sm transition-all hover:border-green-300 hover:shadow-md hover:shadow-green-100/50">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-medium text-[#a6adc8]">Total Agents</h3>
-              <div className="rounded-xl bg-[#89b4fa]/20 p-2.5 text-[#89b4fa] group-hover:scale-110 transition-transform">
+              <h3 className="text-sm font-medium text-[#5a7a6a]">Total Agents</h3>
+              <div className="rounded-xl bg-green-100 p-2.5 text-green-600 group-hover:scale-110 transition-transform">
                  <Users className="size-4" />
               </div>
             </div>
-            <p className="text-3xl font-bold text-[#cdd6f4] mb-1">{displayedAgentsCount}</p>
-            <p className="text-xs text-[#6c7086]">Active AI Assistants</p>
+            <p className="text-3xl font-bold text-[#1a3d2e] mb-1">{displayedAgentsCount}</p>
+            <p className="text-xs text-[#7a9a8a]">Active AI Assistants</p>
           </div>
 
-          <div className="group relative overflow-hidden rounded-2xl border border-[#45475a] bg-[#313244] p-5 transition-all hover:border-[#f38ba8]/30 hover:bg-[#383850] hover:shadow-lg hover:shadow-[#f38ba8]/10">
+          <div className="group relative overflow-hidden rounded-2xl border border-blue-200 bg-white p-5 shadow-sm transition-all hover:border-blue-300 hover:shadow-md hover:shadow-blue-100/50">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-medium text-[#a6adc8]">Total Meetings</h3>
-              <div className="rounded-xl bg-[#f38ba8]/20 p-2.5 text-[#f38ba8] group-hover:scale-110 transition-transform">
+              <h3 className="text-sm font-medium text-[#5a7a6a]">Total Meetings</h3>
+              <div className="rounded-xl bg-blue-100 p-2.5 text-blue-600 group-hover:scale-110 transition-transform">
                  <Activity className="size-4" />
               </div>
             </div>
-            <p className="text-3xl font-bold text-[#cdd6f4] mb-1">{meetingStats.totalConfigured}</p>
-            <p className="text-xs text-[#6c7086]">All time sessions</p>
+            <p className="text-3xl font-bold text-[#1a3d2e] mb-1">{meetingStats.totalConfigured}</p>
+            <p className="text-xs text-[#7a9a8a]">All time sessions</p>
           </div>
 
-          <div className="group relative overflow-hidden rounded-2xl border border-[#45475a] bg-[#313244] p-5 transition-all hover:border-[#a6e3a1]/30 hover:bg-[#383850] hover:shadow-lg hover:shadow-[#a6e3a1]/10">
+          <div className="group relative overflow-hidden rounded-2xl border border-cyan-200 bg-white p-5 shadow-sm transition-all hover:border-cyan-300 hover:shadow-md hover:shadow-cyan-100/50">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-medium text-[#a6adc8]">Avg Duration</h3>
-              <div className="rounded-xl bg-[#a6e3a1]/20 p-2.5 text-[#a6e3a1] group-hover:scale-110 transition-transform">
+              <h3 className="text-sm font-medium text-[#5a7a6a]">Avg Duration</h3>
+              <div className="rounded-xl bg-cyan-100 p-2.5 text-cyan-600 group-hover:scale-110 transition-transform">
                  <Clock className="size-4" />
               </div>
             </div>
-            <p className="text-3xl font-bold text-[#cdd6f4] mb-1">{formatDuration(analyticsData.averageDuration)}</p>
-            <p className="text-xs text-[#6c7086]">Per summarized meeting</p>
+            <p className="text-3xl font-bold text-[#1a3d2e] mb-1">{formatDuration(analyticsData.averageDuration)}</p>
+            <p className="text-xs text-[#7a9a8a]">Per summarized meeting</p>
           </div>
 
-          <div className="group relative overflow-hidden rounded-2xl border border-[#45475a] bg-[#313244] p-5 transition-all hover:border-[#f9e2af]/30 hover:bg-[#383850] hover:shadow-lg hover:shadow-[#f9e2af]/10">
+          <div className="group relative overflow-hidden rounded-2xl border border-emerald-200 bg-white p-5 shadow-sm transition-all hover:border-emerald-300 hover:shadow-md hover:shadow-emerald-100/50">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-medium text-[#a6adc8]">Upcoming</h3>
-              <div className="rounded-xl bg-[#f9e2af]/20 p-2.5 text-[#f9e2af] group-hover:scale-110 transition-transform">
+              <h3 className="text-sm font-medium text-[#5a7a6a]">Upcoming</h3>
+              <div className="rounded-xl bg-emerald-100 p-2.5 text-emerald-600 group-hover:scale-110 transition-transform">
                  <Calendar className="size-4" />
               </div>
             </div>
-            <p className="text-3xl font-bold text-[#cdd6f4] mb-1">{meetingStats.upcomingCount}</p>
-            <p className="text-xs text-[#6c7086]">Scheduled sessions</p>
+            <p className="text-3xl font-bold text-[#1a3d2e] mb-1">{meetingStats.upcomingCount}</p>
+            <p className="text-xs text-[#7a9a8a]">Scheduled sessions</p>
           </div>
 
         </div>
 
         {/* Analytics Chart */}
-        <div className="rounded-2xl border border-[#45475a] bg-[#313244]/50 backdrop-blur-2xl overflow-hidden flex flex-col min-h-[400px]">
-          <div className="flex items-center justify-between border-b border-[#45475a] px-6 py-5 bg-[#313244]/80">
-            <h2 className="text-lg font-semibold text-[#cdd6f4] flex items-center gap-3">
-              <span className="flex items-center justify-center rounded-xl bg-[#89b4fa]/20 p-2 text-[#89b4fa]">
+        <div className="rounded-2xl border border-green-200 bg-white shadow-sm overflow-hidden flex flex-col min-h-[400px]">
+          <div className="flex items-center justify-between border-b border-green-100 px-6 py-5 bg-green-50/50">
+            <h2 className="text-lg font-semibold text-[#1a3d2e] flex items-center gap-3">
+              <span className="flex items-center justify-center rounded-xl bg-green-100 p-2 text-green-600">
                 <Zap className="size-4" />
               </span>
-              AI Insights & Talk Time <span className="text-sm font-normal text-[#6c7086] ml-2">(Minutes)</span>
+              AI Insights & Talk Time <span className="text-sm font-normal text-[#5a7a6a] ml-2">(Minutes)</span>
             </h2>
           </div>
           <div className="flex-1 p-6 flex flex-col justify-center">
@@ -137,27 +137,27 @@ export function HomeView() {
               <div className="h-[320px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={chartData} margin={{ top: 20, right: 20, left: -20, bottom: 0 }}>
-                    <XAxis dataKey="name" stroke="#6c7086" fontSize={12} tickLine={false} axisLine={false} dy={10} />
-                    <YAxis stroke="#6c7086" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `${val}m`} dx={-10} />
+                    <XAxis dataKey="name" stroke="#7a9a8a" fontSize={12} tickLine={false} axisLine={false} dy={10} />
+                    <YAxis stroke="#7a9a8a" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `${val}m`} dx={-10} />
                     <Tooltip 
-                      cursor={{fill: 'rgba(137, 180, 250, 0.05)'}}
-                      contentStyle={{ backgroundColor: '#313244', border: '1px solid #45475a', borderRadius: '12px', color: '#cdd6f4' }}
-                      itemStyle={{ color: '#89b4fa', fontWeight: 'bold' }}
+                      cursor={{fill: 'rgba(16, 185, 129, 0.05)'}}
+                      contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #cce8d9', borderRadius: '12px', color: '#1a3d2e' }}
+                      itemStyle={{ color: '#10b981', fontWeight: 'bold' }}
                     />
-                    <Bar dataKey="talkTime" fill="url(#colorTalkTimeMid)" radius={[6, 6, 0, 0]} barSize={40} animationDuration={1500} />
+                    <Bar dataKey="talkTime" fill="url(#colorTalkTimeFresh)" radius={[6, 6, 0, 0]} barSize={40} animationDuration={1500} />
                     <defs>
-                      <linearGradient id="colorTalkTimeMid" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#89b4fa" stopOpacity={1}/>
-                        <stop offset="100%" stopColor="#6366f1" stopOpacity={0.8}/>
+                      <linearGradient id="colorTalkTimeFresh" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#10b981" stopOpacity={1}/>
+                        <stop offset="100%" stopColor="#06b6d4" stopOpacity={0.8}/>
                       </linearGradient>
                     </defs>
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             ) : (
-              <div className="flex flex-col h-[200px] items-center justify-center text-[#6c7086] gap-4">
-                 <div className="rounded-full bg-[#45475a]/30 p-4">
-                    <Activity className="size-8 text-[#585b70]" />
+              <div className="flex flex-col h-[200px] items-center justify-center text-[#5a7a6a] gap-4">
+                 <div className="rounded-full bg-green-100 p-4">
+                    <Activity className="size-8 text-green-300" />
                  </div>
                  <p className="text-sm font-medium">No meeting data recorded yet.</p>
               </div>
