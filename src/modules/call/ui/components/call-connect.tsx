@@ -32,7 +32,7 @@ export const CallConnect = ({
   userImage,
 }: Props) => {
   const trpc = useTRPC();
-  const { mutateAsync: genrateToken } = useMutation(
+  const { mutateAsync } = useMutation(
     trpc.meetings.generateToken.mutationOptions(),
   )
   const [client, setClient] = useState<StreamVideoClient>();
@@ -46,7 +46,7 @@ export const CallConnect = ({
     const _client = new StreamVideoClient({
       apiKey: process.env.NEXT_PUBLIC_STREAM_VIDEO_API_KEY!,
       user,
-      tokenProvider: genrateToken,
+      tokenProvider: () => mutateAsync(),
     });
 
     setClient(_client);
@@ -54,7 +54,7 @@ export const CallConnect = ({
     return () => {
       _client.disconnectUser();
     };
-  }, [userId, userName, userImage, genrateToken]);
+  }, [userId, userName, userImage]); // removed genrateToken since it causes infinite loops if unstable
 
   const [call, setCall] = useState<Call>();
   useEffect(() => {

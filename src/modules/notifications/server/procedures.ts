@@ -1,7 +1,7 @@
 import { db } from "@/db";
-import { notifications } from "@/db/schema";
+import { notifications, meetings } from "@/db/schema";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, count, gt, lt, or } from "drizzle-orm";
 import { z } from "zod";
 
 export const notificationsRouter = createTRPCRouter({
@@ -32,7 +32,7 @@ export const notificationsRouter = createTRPCRouter({
 
   getUnreadCount: protectedProcedure.query(async ({ ctx }) => {
     const [result] = await db
-      .select({ count: notifications.id })
+      .select({ count: count() })
       .from(notifications)
       .where(
         and(
@@ -76,5 +76,73 @@ export const notificationsRouter = createTRPCRouter({
             eq(notifications.userId, ctx.auth.user.id)
           )
         );
+    }),
+
+  getCompletedMeetings: protectedProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(20).default(5),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { limit } = input;
+
+      const completedMeetings = await db
+        .select({
+          id: meetings.id,
+          name: meetings.name,
+          status: meetings.status,
+          summary: meetings.summary,
+          startedAt: meetings.startedAt,
+          endedAt: meetings.endedAt,
+          createdAt: meetings.createdAt,
+        })
+        .from(meetings)
+        .where(
+          and(
+            eq(meetings.userId, ctx.auth.user.id),
+            or(
+              eq(meetings.status, "completed"),
+              eq(meetings.status, "processing")
+            )
+          )
+        )
+        .orderBy(desc(meetings.createdAt))
+        .limit(limit);
+
+      return completedMeetings;
+    }),
+
+  getUpcomingMeetings: protectedProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(20).default(5),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { limit } = input;
+
+      const upcomingMeetings = await db
+        .select({
+          id: meetings.id,
+          name: meetings.name,
+          status: meetings.status,
+          startedAt: meetings.startedAt,
+          createdAt: meetings.createdAt,
+        })
+        .from(meetings)
+        .where(
+          and(
+            eq(meetings.userId, ctx.auth.user.id),
+            or(
+              eq(meetings.status, "upcoming"),
+              eq(meetings.status, "active")
+            )
+          )
+        )
+        .orderBy(meetings.createdAt)
+        .limit(limit);
+
+      return upcomingMeetings;
     }),
 });

@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { agents, meetings } from "@/db/schema";
+import { agents, meetings, notifications } from "@/db/schema";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -28,13 +28,10 @@ export const meetingsRouter = createTRPCRouter({
         GeneratedAvatarUri({ seed: ctx.auth.user.name, variant: "initials" }),
     },
     ]);
-    const expressionTime = Math.floor(Date.now() / 1000) + 3600;
-    const issuedAt = Math.floor(Date.now() / 1000) - 3600;
 
     const token = streamVideo.generateUserToken({
       user_id: ctx.auth.user.id,
-      exp: expressionTime,
-      validity_in_seconds: issuedAt,
+      validity_in_seconds: 3600,
     });
     return token;
   }),
@@ -141,6 +138,14 @@ export const meetingsRouter = createTRPCRouter({
       },
       ]);
 
+      await db.insert(notifications).values({
+        userId: createdMeeting.userId,
+        type: "meeting_reminder",
+        title: "Upcoming Meeting",
+        message: `Your meeting "${createdMeeting.name}" has been scheduled.`,
+        meetingId: createdMeeting.id,
+      });
+
       return createdMeeting;
     }),
   getOne: protectedProcedure
@@ -212,6 +217,14 @@ export const meetingsRouter = createTRPCRouter({
         })
         .where(eq(meetings.id, input.id))
         .returning();
+
+      await db.insert(notifications).values({
+        userId: updatedMeeting.userId,
+        type: "meeting_cancelled",
+        title: "Meeting Cancelled",
+        message: `Your meeting "${updatedMeeting.name}" has been cancelled.`,
+        meetingId: updatedMeeting.id,
+      });
 
       return updatedMeeting;
     }),

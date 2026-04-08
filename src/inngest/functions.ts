@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { agents, meetings, user } from "@/db/schema";
+import { agents, meetings, user, notifications } from "@/db/schema";
 import { inngest } from "@/inngest/client";
 import { StreamTranscriptItem } from "@/modules/meetings/types";
 import { eq, inArray } from "drizzle-orm";
@@ -103,8 +103,8 @@ export const meetingsProcessing = inngest.createFunction(
              return global.JSON.parse(aiResponse.choices[0].message.content || '{}');
         });
 
-        await step.run("save-summary", async () => {
-            await db
+        const updatedMeeting = await step.run("save-summary", async () => {
+            const [meeting] = await db
                 .update(meetings)
                 .set({
                     summary: aiInsights.summary || "",
@@ -115,6 +115,20 @@ export const meetingsProcessing = inngest.createFunction(
                     status: "completed",
                 })
                 .where(eq(meetings.id, event.data.meetingId))
-        })
+                .returning();
+            return meeting;
+        });
+
+        await step.run("create-notification", async () => {
+            if (updatedMeeting?.userId) {
+                await db.insert(notifications).values({
+                    userId: updatedMeeting.userId,
+                    type: "summary_ready",
+                    title: "Meeting Summary Ready",
+                    message: `The AI summary and insights for your meeting "${updatedMeeting.name}" are now available to view.`,
+                    meetingId: updatedMeeting.id,
+                });
+            }
+        });
     },
 );
