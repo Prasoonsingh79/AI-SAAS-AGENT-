@@ -54,7 +54,7 @@ export const CallConnect = ({
     return () => {
       _client.disconnectUser();
     };
-  }, [userId, userName, userImage]); // removed genrateToken since it causes infinite loops if unstable
+  }, [userId, userName, userImage]);
 
   const [call, setCall] = useState<Call>();
   useEffect(() => {

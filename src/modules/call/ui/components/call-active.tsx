@@ -1,9 +1,12 @@
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect } from "react";
 import {
   CallControls,
   SpeakerLayout,
-} from "@stream-io/video-react-sdk"
+} from "@stream-io/video-react-sdk";
+import { useSpeechToText } from "@/hooks/use-speech-to-text";
+import { LiveTranscription } from "./live-transcription";
 
 interface Props {
   onLeave: () => void;
@@ -11,6 +14,15 @@ interface Props {
 }
 
 export const CallActive = ({ onLeave, meetingName }: Props) => {
+  const { isListening, transcripts, toggleListening, startListening } = useSpeechToText();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      startListening();
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [startListening]);
+
   return (
     <div className="w-full h-full relative overflow-hidden bg-black text-white">
       <div className="absolute top-4 left-4 z-10 flex items-center gap-2 bg-[#19232d] px-4 py-2 rounded-lg border border-[#19232d]">
@@ -21,6 +33,11 @@ export const CallActive = ({ onLeave, meetingName }: Props) => {
           {meetingName}
         </h4>
       </div>
+      <LiveTranscription
+        transcripts={transcripts}
+        isListening={isListening}
+        onToggleListening={toggleListening}
+      />
       <div className="flex h-full w-full items-center justify-center">
         <SpeakerLayout participantsBarPosition="bottom" />
       </div>

@@ -21,24 +21,24 @@ export const CallUI =({meetingName}:Props)=>{
    }
    
    const handleleave = async () => {
-    try {
-      if (!call) {
-        setShow("ended");
-        return;
-      }
-      
-      // Check if the call is still active before trying to leave
-      if (call.state.callingState !== 'left') {
-        await call.leave();
-      }
-      
-      setShow("ended");
-    } catch (error) {
-      console.error('Error leaving call:', error);
-      // Still proceed to show the ended state even if there's an error
-      setShow("ended");
-    }
-  };
+     try {
+       if (!call) {
+         setShow("ended");
+         return;
+       }
+       
+       // Check if the call is still active before trying to leave
+       if (call.state.callingState !== 'left') {
+         await call.leave();
+       }
+       
+       setShow("ended");
+     } catch (error) {
+       console.error('Error leaving call:', error);
+       // Still proceed to show the ended state even if there's an error
+       setShow("ended");
+     }
+   };
 
 return(
     <StreamTheme className="h-full">
